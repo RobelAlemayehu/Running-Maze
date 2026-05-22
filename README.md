@@ -3,6 +3,10 @@
 A real-time 3D maze generator and solver built with Python, OpenGL, and GLFW. Watch a maze get carved out using recursive backtracking, then follow a solver as it navigates from start to finish using depth-first search with backtracking.
  
 ---
+
+## Demo
+
+▶️ [Watch the Loom Recording](https://www.loom.com/share/3ce8a81150f94edd89b44e4624b96a01)
  
 ## Features
  
