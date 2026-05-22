@@ -88,3 +88,52 @@ def render_scene():
                 draw_block(x,             WALL_HEIGHT/2, z+CELL_SIZE/2,   0.05, WALL_HEIGHT/2, CELL_SIZE/2, (0.6,0.6,0.6))
             if r == R-1:
                 draw_block(x+CELL_SIZE/2, WALL_HEIGHT/2, z+CELL_SIZE,     CELL_SIZE/2, WALL_HEIGHT/2, 0.05, (0.7,0.7,0.7))
+
+
+def main():
+    if not glfw.init(): return
+    window = glfw.create_window(1200, 900, "3D Backtracking Maze Runner", None, None)
+    glfw.make_context_current(window)
+    glEnable(GL_DEPTH_TEST)
+
+    glMatrixMode(GL_PROJECTION)
+    gluPerspective(45, 1200/900, 0.1, 100.0)
+    glMatrixMode(GL_MODELVIEW)
+
+    gen_stack.append(start_node)
+
+    while not glfw.window_should_close(window):
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        glClearColor(0.05, 0.05, 0.08, 1.0)
+        glLoadIdentity()
+        gluLookAt(0, 15, 15,  0, 0, 0,  0, 1, 0)  # Camera (tilted)
+
+        render_scene()
+
+        off_x = -(C*CELL_SIZE)/2
+        off_z = -(R*CELL_SIZE)/2
+
+        # Start (Green) and End (Gold) markers
+        draw_block(off_x+start_node[1]*CELL_SIZE+0.5, 0.02, off_z+start_node[0]*CELL_SIZE+0.5, 0.4,0.02,0.4, (0,1,0))
+        draw_block(off_x+end_node[1]*CELL_SIZE+0.5,   0.02, off_z+end_node[0]*CELL_SIZE+0.5,   0.4,0.02,0.4, (1,0.8,0))
+
+        # Dead ends: BLUE
+        for dr, dc in dead_ends:
+            draw_block(off_x+dc*CELL_SIZE+0.5, 0.05, off_z+dr*CELL_SIZE+0.5, 0.2,0.05,0.2, (0,0,1))
+
+        # Active path: WHITE footprints
+        for pr, pc in path_stack:
+            draw_block(off_x+pc*CELL_SIZE+0.5, 0.05, off_z+pr*CELL_SIZE+0.5, 0.1,0.03,0.1, (1,1,1))
+
+        # Mouse: RED block
+        draw_block(off_x+current_pos[1]*CELL_SIZE+0.5, 0.2, off_z+current_pos[0]*CELL_SIZE+0.5, 0.2,0.2,0.2, (1,0,0))
+
+        if PHASE == "GENERATING": generate_step(); time.sleep(0.01)
+        elif PHASE == "SOLVING":  solve_step();    time.sleep(0.04)
+
+        glfw.swap_buffers(window)
+        glfw.poll_events()
+    glfw.terminate()
+
+if __name__ == "__main__":
+    main()
