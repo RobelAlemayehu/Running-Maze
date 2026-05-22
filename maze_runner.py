@@ -54,3 +54,37 @@ def generate_step():
         gen_stack.append((nr, nc))
     else:
         gen_stack.pop()
+def draw_block(x, y, z, sx, sy, sz, color):
+    """Draws a 3D cube/wall."""
+    glColor3f(*color)
+    glPushMatrix()
+    glTranslatef(x, y, z)
+    glScalef(sx, sy, sz)
+    glBegin(GL_QUADS)
+    glVertex3f(1,1,-1);  glVertex3f(-1,1,-1);  glVertex3f(-1,1,1);  glVertex3f(1,1,1)   # Top
+    glVertex3f(1,-1,1);  glVertex3f(-1,-1,1);  glVertex3f(-1,-1,-1);glVertex3f(1,-1,-1) # Bottom
+    glVertex3f(1,1,1);   glVertex3f(-1,1,1);   glVertex3f(-1,-1,1); glVertex3f(1,-1,1)  # Front
+    glVertex3f(1,-1,-1); glVertex3f(-1,-1,-1); glVertex3f(-1,1,-1); glVertex3f(1,1,-1)  # Back
+    glVertex3f(-1,1,1);  glVertex3f(-1,1,-1);  glVertex3f(-1,-1,-1);glVertex3f(-1,-1,1) # Left
+    glVertex3f(1,1,-1);  glVertex3f(1,1,1);    glVertex3f(1,-1,1);  glVertex3f(1,-1,-1) # Right
+    glEnd()
+    glPopMatrix()
+
+def render_scene():
+    """Draws the floor and all walls."""
+    off_x = -(C * CELL_SIZE) / 2
+    off_z = -(R * CELL_SIZE) / 2
+    # Floor
+    draw_block(0, -0.05, 0, (C*CELL_SIZE)/2, 0.02, (R*CELL_SIZE)/2, (0.1, 0.1, 0.1))
+    for r in range(R):
+        for c in range(C):
+            x = off_x + c * CELL_SIZE
+            z = off_z + r * CELL_SIZE
+            if north_wall[r][c]:
+                draw_block(x+CELL_SIZE/2, WALL_HEIGHT/2, z,               CELL_SIZE/2, WALL_HEIGHT/2, 0.05, (0.7,0.7,0.7))
+            if east_wall[r][c]:
+                draw_block(x+CELL_SIZE,   WALL_HEIGHT/2, z+CELL_SIZE/2,   0.05, WALL_HEIGHT/2, CELL_SIZE/2, (0.6,0.6,0.6))
+            if c == 0:
+                draw_block(x,             WALL_HEIGHT/2, z+CELL_SIZE/2,   0.05, WALL_HEIGHT/2, CELL_SIZE/2, (0.6,0.6,0.6))
+            if r == R-1:
+                draw_block(x+CELL_SIZE/2, WALL_HEIGHT/2, z+CELL_SIZE,     CELL_SIZE/2, WALL_HEIGHT/2, 0.05, (0.7,0.7,0.7))
