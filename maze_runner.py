@@ -89,6 +89,37 @@ def render_scene():
             if r == R-1:
                 draw_block(x+CELL_SIZE/2, WALL_HEIGHT/2, z+CELL_SIZE,     CELL_SIZE/2, WALL_HEIGHT/2, 0.05, (0.7,0.7,0.7))
 
+                
+
+def solve_step():
+    global PHASE, current_pos
+    if not solver_stack: return
+    r, c = solver_stack[-1]
+    current_pos = (r, c)
+    if (r, c) == end_node:
+        PHASE = "FINISHED"; return
+    if not visited_solver[r][c]:
+        visited_solver[r][c] = True
+        path_stack.append((r, c))
+
+    dirs = [(-1,0),(1,0),(0,1),(0,-1)]
+    random.shuffle(dirs)
+    moved = False
+    for dr, dc in dirs:
+        nr, nc = r+dr, c+dc
+        if 0 <= nr < R and 0 <= nc < C and not visited_solver[nr][nc]:
+            wall = False
+            if   dr == -1 and north_wall[r][c]:    wall = True
+            elif dr ==  1 and north_wall[nr][nc]:  wall = True
+            elif dc ==  1 and east_wall[r][c]:     wall = True
+            elif dc == -1 and east_wall[r][c-1]:   wall = True
+            if not wall:
+                solver_stack.append((nr, nc))
+                moved = True; break
+    if not moved:
+        # Assignment: Dead end = blue + backtrack
+        dead_ends.append(path_stack.pop())
+        solver_stack.pop()
 
 def main():
     if not glfw.init(): return
